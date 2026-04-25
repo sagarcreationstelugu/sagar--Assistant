@@ -8,19 +8,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Install dependencies			run: |
+      - name: Install dependencies
+        run: |
           sudo apt update
           sudo apt install -y python3-pip git zip unzip openjdk-17-jdk
-          pip install kivy buildozer cython
+          pip3 install --upgrade pip
+          pip3 install kivy buildozer cython
 
-      - name: Build APK
+      - name: Initialize Buildozer
         run: |
           buildozer init
+
+      - name: Configure Buildozer
+        run: |
           sed -i 's/title = .*/title = Sagar Assistant/' buildozer.spec
           sed -i 's/requirements = .*/requirements = python3,kivy,speechrecognition,pyttsx3/' buildozer.spec
           echo "android.permissions = INTERNET, RECORD_AUDIO" >> buildozer.spec
+
+      - name: Build APK
+        run: |
           buildozer -v android debug
 
       - name: Upload APK
